@@ -65,16 +65,18 @@ const blogValidation = [
 router.get('/', optionalAuth, getBlogs);
 router.get('/categories', getBlogCategories);
 router.get('/tags', getPopularTags);
+
+// Admin protected routes (must come before public :slug/:id routes)
+router.get('/admin/stats', protect, authorize('admin'), getBlogStats);
+router.get('/admin/:id', protect, authorize('admin'), getBlog);
+
+// Public routes (must come after admin routes)
 router.get('/:slug', getBlog);
 router.post('/:id/like', likeBlog);
 
 // Protected routes (Admin only)
 router.use(protect);
 router.use(authorize('admin'));
-
-router
-  .route('/admin/stats')
-  .get(getBlogStats);
 
 router
   .route('/')

@@ -70,14 +70,16 @@ const getDashboardStats = async (req, res) => {
     const recentProjects = await Project.find()
       .sort({ createdAt: -1 })
       .limit(5)
-      .select('title slug createdAt isPublished')
-      .populate('createdBy', 'name');
+      .select('title slug createdAt isPublished images')
+      .populate('createdBy', 'name')
+      .lean();
 
     const recentBlogs = await Blog.find()
       .sort({ createdAt: -1 })
       .limit(5)
-      .select('title slug createdAt status views')
-      .populate('author', 'name');
+      .select('title slug createdAt status views featuredImage')
+      .populate('author', 'name')
+      .lean();
 
     res.status(200).json({
       status: 'success',
@@ -143,7 +145,8 @@ const getAdminProjects = async (req, res) => {
       .sort(sort)
       .skip(skip)
       .limit(limitNum)
-      .select('-longDescription -content');
+      .select('-longDescription -content')
+      .lean();
 
     const total = await Project.countDocuments(query);
 
@@ -198,7 +201,8 @@ const getAdminBlogs = async (req, res) => {
       .sort(sort)
       .skip(skip)
       .limit(limitNum)
-      .select('-content');
+      .select('-content')
+      .lean();
 
     const total = await Blog.countDocuments(query);
 

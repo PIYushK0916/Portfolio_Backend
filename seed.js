@@ -543,8 +543,8 @@ async function seedDatabase() {
         console.log('👤 Creating admin user...');
         const adminUser = await User.create({
             name: 'Piyush Katole',
-            email: 'admin@piyushkatole.com',
-            password: 'admin123456', // Let the model hash it
+            email: 'admin@portfolio.com',
+            password: 'admin7989', // Let the model hash it
             role: 'admin',
             bio: 'Full Stack Developer & Tech Enthusiast',
             avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
@@ -588,13 +588,14 @@ async function seedDatabase() {
         console.log('🎉 Database seeding completed successfully!\n');
         console.log('📊 Summary:');
         console.log(`   • Admin User: ${adminUser.email}`);
-        console.log(`   • Password: admin123456`);
+        console.log(`   • Password: admin7989`);
         console.log(`   • Projects: ${projects.length}`);
         console.log(`   • Blog Posts: ${blogs.length}\n`);
 
         console.log('🔑 Admin Login Credentials:');
         console.log(`   Email: ${adminUser.email}`);
-        console.log(`   Password: admin123456\n`);
+        console.log(`   Password: admin7989`);
+        console.log(`   Frontend Password: 7989\n`);
 
         process.exit(0);
     } catch (error) {
