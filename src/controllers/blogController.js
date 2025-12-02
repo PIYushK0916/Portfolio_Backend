@@ -186,6 +186,41 @@ const createBlog = async (req, res) => {
       blogData.tags = blogData.tags.split(',').map(tag => tag.trim().toLowerCase());
     }
 
+    // Parse relatedPosts if it's a string
+    if (typeof blogData.relatedPosts === 'string') {
+      blogData.relatedPosts = blogData.relatedPosts.split(',').filter(id => id.trim());
+    }
+
+    // Parse SEO object if it's a string
+    if (typeof blogData.seo === 'string') {
+      try {
+        blogData.seo = JSON.parse(blogData.seo);
+      } catch (e) {
+        delete blogData.seo;
+      }
+    }
+
+    // Parse series object if it's a string
+    if (typeof blogData.series === 'string') {
+      try {
+        blogData.series = JSON.parse(blogData.series);
+      } catch (e) {
+        delete blogData.series;
+      }
+    }
+
+    // Convert numeric strings to numbers
+    if (blogData.order) blogData.order = parseInt(blogData.order);
+    if (blogData.readTime) blogData.readTime = parseInt(blogData.readTime);
+
+    // Convert boolean strings to booleans
+    if (typeof blogData.isFeatured === 'string') {
+      blogData.isFeatured = blogData.isFeatured === 'true';
+    }
+    if (typeof blogData.isSticky === 'string') {
+      blogData.isSticky = blogData.isSticky === 'true';
+    }
+
     const blog = await Blog.create(blogData);
 
     await blog.populate('author', 'name email avatar');
@@ -201,7 +236,8 @@ const createBlog = async (req, res) => {
     console.error('Create blog error:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Server error creating blog post'
+      message: 'Server error creating blog post',
+      error: error.message
     });
   }
 };
@@ -247,11 +283,53 @@ const updateBlog = async (req, res) => {
         alt: req.body.featuredImageAlt || '',
         caption: req.body.featuredImageCaption || ''
       };
+    } else if (req.body.featuredImageAlt || req.body.featuredImageCaption) {
+      // Update only alt/caption if no new image
+      updateData.featuredImage = {
+        url: blog.featuredImage?.url || '',
+        alt: req.body.featuredImageAlt || blog.featuredImage?.alt || '',
+        caption: req.body.featuredImageCaption || blog.featuredImage?.caption || ''
+      };
     }
 
     // Parse arrays if they're strings
     if (typeof updateData.tags === 'string') {
       updateData.tags = updateData.tags.split(',').map(tag => tag.trim().toLowerCase());
+    }
+
+    // Parse relatedPosts if it's a string
+    if (typeof updateData.relatedPosts === 'string') {
+      updateData.relatedPosts = updateData.relatedPosts.split(',').filter(id => id.trim());
+    }
+
+    // Parse SEO object if it's a string
+    if (typeof updateData.seo === 'string') {
+      try {
+        updateData.seo = JSON.parse(updateData.seo);
+      } catch (e) {
+        delete updateData.seo;
+      }
+    }
+
+    // Parse series object if it's a string
+    if (typeof updateData.series === 'string') {
+      try {
+        updateData.series = JSON.parse(updateData.series);
+      } catch (e) {
+        delete updateData.series;
+      }
+    }
+
+    // Convert numeric strings to numbers
+    if (updateData.order) updateData.order = parseInt(updateData.order);
+    if (updateData.readTime) updateData.readTime = parseInt(updateData.readTime);
+
+    // Convert boolean strings to booleans
+    if (typeof updateData.isFeatured === 'string') {
+      updateData.isFeatured = updateData.isFeatured === 'true';
+    }
+    if (typeof updateData.isSticky === 'string') {
+      updateData.isSticky = updateData.isSticky === 'true';
     }
 
     blog = await Blog.findByIdAndUpdate(id, updateData, {
@@ -270,7 +348,8 @@ const updateBlog = async (req, res) => {
     console.error('Update blog error:', error);
     res.status(500).json({
       status: 'error',
-      message: 'Server error updating blog post'
+      message: 'Server error updating blog post',
+      error: error.message
     });
   }
 };
